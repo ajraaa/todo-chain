@@ -18,6 +18,7 @@ contract Todo {
     event TaskDeleted(uint256 id, bool isDeleted);
 
     function addTask(string memory _task) public {
+        require(bytes(_task).length > 0, "Task Kosong.");
         count++;
         tasks[count] = Task(count, _task, false, false);
         emit TaskAdded(count, _task, false, false);

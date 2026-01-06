@@ -24,6 +24,11 @@ contract TodoTest is Test {
         assertEq(todo.count(), 1);
     }
 
+    function test_addBlankTask() public {
+        vm.expectRevert("Task Kosong.");
+        todo.addTask("");
+    }
+
     function test_completeTask() public {
         todo.addTask("Mandi");
         todo.completeTask(1);
