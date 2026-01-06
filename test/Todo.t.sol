@@ -6,7 +6,8 @@ import {Todo} from "../src/Todo.sol";
 
 contract TodoTest is Test {
     Todo public todo;
-    address user = vm.addr(2);
+    address user = vm.addr(1);
+    address user2 = vm.addr(2);
 
     function setUp() public {
         todo = new Todo();
@@ -65,6 +66,14 @@ contract TodoTest is Test {
         todo.editTask(1, "");
     }
 
+    function test_editTaskNotOwner() public {
+        vm.startPrank(user);
+        todo.addTask("Mandi");
+        vm.stopPrank();
+        vm.expectRevert("Not the owner of the task!");
+        todo.editTask(1, "XXX");
+    }
+
     function test_completeTask() public {
         todo.addTask("Mandi");
         todo.completeTask(1);
@@ -78,6 +87,14 @@ contract TodoTest is Test {
         todo.completeTask(1);
     }
 
+    function test_completeTaskNotOwner() public {
+        vm.startPrank(user);
+        todo.addTask("Mandi");
+        vm.stopPrank();
+        vm.expectRevert("Not the owner of the task!");
+        todo.completeTask(1);
+    }
+
     function test_deleteTask() public {
         todo.addTask("Mandi");
         todo.deleteTask(1);
@@ -88,6 +105,14 @@ contract TodoTest is Test {
 
     function test_deleteNonExistingTask() public {
         vm.expectRevert("Task tidak ada.");
+        todo.deleteTask(1);
+    }
+
+    function test_deleteTaskNotOwner() public {
+        vm.startPrank(user);
+        todo.addTask("Mandi");
+        vm.stopPrank();
+        vm.expectRevert("Not the owner of the task!");
         todo.deleteTask(1);
     }
 }
