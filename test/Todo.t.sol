@@ -32,7 +32,10 @@ contract TodoTest is Test {
         assertEq(status, false);
         assertEq(isDeleted, false);
         assertEq(todo.count(), 1);
-        assertEq(todo.userTasks(user), 1);
+
+        assertEq(todo.userTasks(user, 0), 1);
+
+        vm.stopPrank();
     }
 
     function test_addBlankTask() public {

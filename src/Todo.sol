@@ -13,7 +13,7 @@ contract Todo {
     uint256 public count;
 
     mapping(uint256 => Task) public tasks;
-    mapping(address => uint256) public userTasks;
+    mapping(address => uint256[]) public userTasks;
 
     event TaskAdded(
         uint256 id,
@@ -30,7 +30,7 @@ contract Todo {
         require(bytes(_task).length > 0, "Task Kosong.");
         count++;
         tasks[count] = Task(count, _task, msg.sender, false, false);
-        userTasks[msg.sender] = count;
+        userTasks[msg.sender].push(count);
         emit TaskAdded(count, _task, msg.sender, false, false);
     }
 
