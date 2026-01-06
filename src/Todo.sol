@@ -25,14 +25,16 @@ contract Todo {
     }
 
     function completeTask(uint256 _id) public {
+        require(_id > 0 && _id <= count, "Task tidak ada.");
         Task storage _task = tasks[_id];
         _task.status = !_task.status;
         emit TaskFinished(_id, _task.status);
     }
 
     function deleteTask(uint256 _id) public {
+        require(_id > 0 && _id <= count, "Task tidak ada.");
         Task storage _task = tasks[_id];
-        _task.isDeleted = !_task.isDeleted;
+        _task.isDeleted = true;
         emit TaskDeleted(_id, _task.isDeleted);
     }
 }

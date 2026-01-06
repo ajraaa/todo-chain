@@ -37,11 +37,21 @@ contract TodoTest is Test {
         assertTrue(status);
     }
 
+    function test_completeNonExistingTask() public {
+        vm.expectRevert("Task tidak ada.");
+        todo.completeTask(1);
+    }
+
     function test_deleteTask() public {
         todo.addTask("Mandi");
         todo.deleteTask(1);
 
         (, , , bool isDeleted) = todo.tasks(1);
         assertTrue(isDeleted);
+    }
+
+    function test_deleteNonExistingTask() public {
+        vm.expectRevert("Task tidak ada.");
+        todo.deleteTask(1);
     }
 }
