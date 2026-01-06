@@ -6,22 +6,32 @@ import {Todo} from "../src/Todo.sol";
 
 contract TodoTest is Test {
     Todo public todo;
+    address user = vm.addr(2);
 
     function setUp() public {
         todo = new Todo();
     }
 
     function test_addTask() public {
+        vm.startPrank(user);
+
         todo.addTask("Mandi");
 
-        (uint256 id, string memory task, bool status, bool isDeleted) = todo
-            .tasks(1);
+        (
+            uint256 id,
+            string memory task,
+            address creator,
+            bool status,
+            bool isDeleted
+        ) = todo.tasks(1);
 
         assertEq(id, 1);
         assertEq(task, "Mandi");
+        assertEq(creator, user);
         assertEq(status, false);
         assertEq(isDeleted, false);
         assertEq(todo.count(), 1);
+        assertEq(todo.userTasks(user), 1);
     }
 
     function test_addBlankTask() public {
@@ -32,18 +42,18 @@ contract TodoTest is Test {
     function test_editTask() public {
         todo.addTask("Mandi");
 
-        (, string memory task, , ) = todo.tasks(1);
+        (, string memory task, , , ) = todo.tasks(1);
         assertEq(task, "Mandi");
 
         todo.editTask(1, "Mandi Pagi");
-        (, string memory newTask, , ) = todo.tasks(1);
+        (, string memory newTask, , , ) = todo.tasks(1);
         assertEq(newTask, "Mandi Pagi");
     }
 
     function test_editBlankTask() public {
         todo.addTask("Mandi");
 
-        (, string memory task, , ) = todo.tasks(1);
+        (, string memory task, , , ) = todo.tasks(1);
         assertEq(task, "Mandi");
 
         vm.expectRevert("Task Kosong.");
@@ -59,7 +69,7 @@ contract TodoTest is Test {
         todo.addTask("Mandi");
         todo.completeTask(1);
 
-        (, , bool status, ) = todo.tasks(1);
+        (, , , bool status, ) = todo.tasks(1);
         assertTrue(status);
     }
 
@@ -72,7 +82,7 @@ contract TodoTest is Test {
         todo.addTask("Mandi");
         todo.deleteTask(1);
 
-        (, , , bool isDeleted) = todo.tasks(1);
+        (, , , , bool isDeleted) = todo.tasks(1);
         assertTrue(isDeleted);
     }
 

@@ -5,6 +5,7 @@ contract Todo {
     struct Task {
         uint256 id;
         string task;
+        address creator;
         bool status;
         bool isDeleted;
     }
@@ -12,8 +13,15 @@ contract Todo {
     uint256 public count;
 
     mapping(uint256 => Task) public tasks;
+    mapping(address => uint256) public userTasks;
 
-    event TaskAdded(uint256 id, string task, bool status, bool isDeleted);
+    event TaskAdded(
+        uint256 id,
+        string task,
+        address creator,
+        bool status,
+        bool isDeleted
+    );
     event TaskFinished(uint256 id, bool status);
     event TaskDeleted(uint256 id, bool isDeleted);
     event TaskEdited(uint256 id, string task);
@@ -21,8 +29,9 @@ contract Todo {
     function addTask(string memory _task) public {
         require(bytes(_task).length > 0, "Task Kosong.");
         count++;
-        tasks[count] = Task(count, _task, false, false);
-        emit TaskAdded(count, _task, false, false);
+        tasks[count] = Task(count, _task, msg.sender, false, false);
+        userTasks[msg.sender] = count;
+        emit TaskAdded(count, _task, msg.sender, false, false);
     }
 
     function editTask(uint256 _id, string memory _newTask) public {
