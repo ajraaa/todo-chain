@@ -14,11 +14,13 @@ contract TodoTest is Test {
     function test_addTask() public {
         todo.addTask("Mandi");
 
-        (uint256 id, string memory task, bool status) = todo.tasks(1);
+        (uint256 id, string memory task, bool status, bool isDeleted) = todo
+            .tasks(1);
 
         assertEq(id, 1);
         assertEq(task, "Mandi");
         assertEq(status, false);
+        assertEq(isDeleted, false);
         assertEq(todo.count(), 1);
     }
 
@@ -26,7 +28,15 @@ contract TodoTest is Test {
         todo.addTask("Mandi");
         todo.completeTask(1);
 
-        (, , bool status) = todo.tasks(1);
+        (, , bool status, ) = todo.tasks(1);
         assertTrue(status);
+    }
+
+    function test_deleteTask() public {
+        todo.addTask("Mandi");
+        todo.deleteTask(1);
+
+        (, , , bool isDeleted) = todo.tasks(1);
+        assertTrue(isDeleted);
     }
 }
