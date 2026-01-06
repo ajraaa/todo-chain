@@ -29,6 +29,32 @@ contract TodoTest is Test {
         todo.addTask("");
     }
 
+    function test_editTask() public {
+        todo.addTask("Mandi");
+
+        (, string memory task, , ) = todo.tasks(1);
+        assertEq(task, "Mandi");
+
+        todo.editTask(1, "Mandi Pagi");
+        (, string memory newTask, , ) = todo.tasks(1);
+        assertEq(newTask, "Mandi Pagi");
+    }
+
+    function test_editBlankTask() public {
+        todo.addTask("Mandi");
+
+        (, string memory task, , ) = todo.tasks(1);
+        assertEq(task, "Mandi");
+
+        vm.expectRevert("Task Kosong.");
+        todo.editTask(1, "");
+    }
+
+    function test_editNonExistingTask() public {
+        vm.expectRevert("Task tidak ada.");
+        todo.editTask(1, "");
+    }
+
     function test_completeTask() public {
         todo.addTask("Mandi");
         todo.completeTask(1);

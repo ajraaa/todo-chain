@@ -16,12 +16,21 @@ contract Todo {
     event TaskAdded(uint256 id, string task, bool status, bool isDeleted);
     event TaskFinished(uint256 id, bool status);
     event TaskDeleted(uint256 id, bool isDeleted);
+    event TaskEdited(uint256 id, string task);
 
     function addTask(string memory _task) public {
         require(bytes(_task).length > 0, "Task Kosong.");
         count++;
         tasks[count] = Task(count, _task, false, false);
         emit TaskAdded(count, _task, false, false);
+    }
+
+    function editTask(uint256 _id, string memory _newTask) public {
+        require(_id > 0 && _id <= count, "Task tidak ada.");
+        require(bytes(_newTask).length > 0, "Task Kosong.");
+        Task storage _task = tasks[_id];
+        _task.task = _newTask;
+        emit TaskEdited(_id, _task.task);
     }
 
     function completeTask(uint256 _id) public {
