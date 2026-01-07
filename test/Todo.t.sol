@@ -35,6 +35,25 @@ contract TodoTest is Test {
 
         assertEq(todo.userTasks(user, 0), 1);
 
+        todo.addTask("Makan");
+
+        (
+            uint256 id2,
+            string memory task2,
+            address creator2,
+            bool status2,
+            bool isDeleted2
+        ) = todo.tasks(2);
+
+        assertEq(id2, 2);
+        assertEq(task2, "Makan");
+        assertEq(creator2, user);
+        assertEq(status2, false);
+        assertEq(isDeleted2, false);
+        assertEq(todo.count(), 2);
+
+        assertEq(todo.userTasks(user, 1), 2);
+
         vm.stopPrank();
     }
 
