@@ -2,9 +2,16 @@
 pragma solidity ^0.8.13;
 
 contract Todo {
+    enum Priority {
+        Low,
+        Medium,
+        High
+    }
+
     struct Task {
         uint256 id;
         string task;
+        Priority priority;
         address creator;
         bool status;
         bool isDeleted;
@@ -18,6 +25,7 @@ contract Todo {
     event TaskAdded(
         uint256 id,
         string task,
+        Priority priority,
         address creator,
         bool status,
         bool isDeleted
@@ -25,13 +33,25 @@ contract Todo {
     event TaskFinished(uint256 id, bool status);
     event TaskDeleted(uint256 id, bool isDeleted);
     event TaskEdited(uint256 id, string task);
+    event PriorityChanged(uint256, Priority priority);
 
-    function addTask(string memory _task) public {
+    function addTask(string memory _task, Priority _priority) public {
         require(bytes(_task).length > 0, "Task Kosong.");
         count++;
-        tasks[count] = Task(count, _task, msg.sender, false, false);
+        tasks[count] = Task(count, _task, _priority, msg.sender, false, false);
         userTasks[msg.sender].push(count);
-        emit TaskAdded(count, _task, msg.sender, false, false);
+        emit TaskAdded(count, _task, _priority, msg.sender, false, false);
+    }
+
+    function editPriority(uint256 _id, Priority _newPriority) public {
+        require(_id > 0 && _id <= count, "Task tidak ada.");
+
+        Task storage _task = tasks[_id];
+
+        require(_task.creator == msg.sender, "Not the owner of the task!");
+
+        _task.priority = _newPriority;
+        emit PriorityChanged(_id, _task.priority);
     }
 
     function editTask(uint256 _id, string memory _newTask) public {

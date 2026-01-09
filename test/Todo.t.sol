@@ -16,11 +16,12 @@ contract TodoTest is Test {
     function test_addTask() public {
         vm.startPrank(user);
 
-        todo.addTask("Mandi");
+        todo.addTask("Mandi", Todo.Priority.Medium);
 
         (
             uint256 id,
             string memory task,
+            Todo.Priority p,
             address creator,
             bool status,
             bool isDeleted
@@ -28,6 +29,7 @@ contract TodoTest is Test {
 
         assertEq(id, 1);
         assertEq(task, "Mandi");
+        assertEq(uint256(p), uint256(Todo.Priority.Medium));
         assertEq(creator, user);
         assertEq(status, false);
         assertEq(isDeleted, false);
@@ -35,11 +37,12 @@ contract TodoTest is Test {
 
         assertEq(todo.userTasks(user, 0), 1);
 
-        todo.addTask("Makan");
+        todo.addTask("Makan", Todo.Priority.High);
 
         (
             uint256 id2,
             string memory task2,
+            Todo.Priority p2,
             address creator2,
             bool status2,
             bool isDeleted2
@@ -47,6 +50,7 @@ contract TodoTest is Test {
 
         assertEq(id2, 2);
         assertEq(task2, "Makan");
+        assertEq(uint256(p2), uint256(Todo.Priority.High));
         assertEq(creator2, user);
         assertEq(status2, false);
         assertEq(isDeleted2, false);
@@ -59,24 +63,24 @@ contract TodoTest is Test {
 
     function test_addBlankTask() public {
         vm.expectRevert("Task Kosong.");
-        todo.addTask("");
+        todo.addTask("", Todo.Priority.Low);
     }
 
     function test_editTask() public {
-        todo.addTask("Mandi");
+        todo.addTask("Mandi", Todo.Priority.Medium);
 
-        (, string memory task, , , ) = todo.tasks(1);
+        (, string memory task, , , , ) = todo.tasks(1);
         assertEq(task, "Mandi");
 
         todo.editTask(1, "Mandi Pagi");
-        (, string memory newTask, , , ) = todo.tasks(1);
+        (, string memory newTask, , , , ) = todo.tasks(1);
         assertEq(newTask, "Mandi Pagi");
     }
 
     function test_editBlankTask() public {
-        todo.addTask("Mandi");
+        todo.addTask("Mandi", Todo.Priority.Medium);
 
-        (, string memory task, , , ) = todo.tasks(1);
+        (, string memory task, , , , ) = todo.tasks(1);
         assertEq(task, "Mandi");
 
         vm.expectRevert("Task Kosong.");
@@ -90,17 +94,17 @@ contract TodoTest is Test {
 
     function test_editTaskNotOwner() public {
         vm.startPrank(user);
-        todo.addTask("Mandi");
+        todo.addTask("Mandi", Todo.Priority.Medium);
         vm.stopPrank();
         vm.expectRevert("Not the owner of the task!");
         todo.editTask(1, "XXX");
     }
 
     function test_completeTask() public {
-        todo.addTask("Mandi");
+        todo.addTask("Mandi", Todo.Priority.Medium);
         todo.completeTask(1);
 
-        (, , , bool status, ) = todo.tasks(1);
+        (, , , , bool status, ) = todo.tasks(1);
         assertTrue(status);
     }
 
@@ -111,17 +115,17 @@ contract TodoTest is Test {
 
     function test_completeTaskNotOwner() public {
         vm.startPrank(user);
-        todo.addTask("Mandi");
+        todo.addTask("Mandi", Todo.Priority.Medium);
         vm.stopPrank();
         vm.expectRevert("Not the owner of the task!");
         todo.completeTask(1);
     }
 
     function test_deleteTask() public {
-        todo.addTask("Mandi");
+        todo.addTask("Mandi", Todo.Priority.Medium);
         todo.deleteTask(1);
 
-        (, , , , bool isDeleted) = todo.tasks(1);
+        (, , , , , bool isDeleted) = todo.tasks(1);
         assertTrue(isDeleted);
     }
 
@@ -132,7 +136,7 @@ contract TodoTest is Test {
 
     function test_deleteTaskNotOwner() public {
         vm.startPrank(user);
-        todo.addTask("Mandi");
+        todo.addTask("Mandi", Todo.Priority.Medium);
         vm.stopPrank();
         vm.expectRevert("Not the owner of the task!");
         todo.deleteTask(1);
