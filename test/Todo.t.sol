@@ -66,6 +66,17 @@ contract TodoTest is Test {
         todo.addTask("", Todo.Priority.Low);
     }
 
+    function test_editPriority() public {
+        todo.addTask("Mandi", Todo.Priority.Medium);
+
+        (, , Todo.Priority p, , , ) = todo.tasks(1);
+        assertEq(uint256(p), uint256(Todo.Priority.Medium));
+
+        todo.editPriority(1, Todo.Priority.High);
+        (, , Todo.Priority newP, , , ) = todo.tasks(1);
+        assertEq(uint256(newP), uint256(Todo.Priority.High));
+    }
+
     function test_editTask() public {
         todo.addTask("Mandi", Todo.Priority.Medium);
 
